@@ -61,8 +61,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem 'rspec-rails'
+  gem 'rails-controller-testing'
 end
 
 gem "httparty", "~> 0.23.1"
-
 gem "nokogiri", "~> 1.18"

@@ -7,4 +7,11 @@ RSpec.describe "IMEI checks", type: :request do
       expect(response).to have_http_status(:success)
     end
   end  
+
+  describe "POST /imei_checks" do
+    it "returns http success" do
+      post imei_checks_path, params: { imei: "123456789012345" }
+      expect(response).to have_http_status(:success)
+    end
+  end
 end
