@@ -1,15 +1,11 @@
-<%= form_with url: imei_checks_path, method: :post, local: true do |form| %>
-  <%= form.label :imeis, "imeiを改行区切りで入力してください" %><br>
-  <%= form.text_area :imeis, rows: 10 %><br/>
-  <%= form.submit "チェックする" %>
+<%= form_with url: imei_checks_path, method: :post, local: true do %>
+  <%= label_tag :imei, "IMEI入力" %>
+  <%= text_field_tag :imei %>
+  <%= submit_tag "チェック" %>
 <% end %>
 
-<% if @results %>
-  <h3>チェック結果</h3>
-  <table>
-    <tr><th>IMEI</th><th>判定</th></tr>
-    <% @results.each do |imei, result| %>
-      <tr><td><%= imei %></td><td></td><%= result %></td></tr>
-    <% end %>
-  </table>
+<h2>判定結果</h2>
+<% if @result.present? %>
+  <p>docomo：<strong><%= @result %></strong></p>
 <% end %>
+
