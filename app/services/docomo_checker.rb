@@ -20,6 +20,9 @@ class DocomoChecker
     # 判定結果を抽出
     result_text = doc.css('div.result-panel')[1]&.text&.strip
 
+    # 半角ハイフンを全角マイナスに置換（幅を揃えるため）
+    result_text = result_text.tr('-', '－') if result_text 
+
     # 結果がなければフォールバック
     result_text.present? ? result_text : "結果が取得できませんでした"
   rescue => e

@@ -5,7 +5,10 @@
 <% end %>
 
 <h2>判定結果</h2>
-<% if @result.present? %>
-  <p>docomo：<strong><%= @result %></strong></p>
+<% if @results.present? %>
+  <% @results.each do |carrier, result| %>
+    <% if result.present? %>
+      <p><%= carrier.to_s.capitalize %>：<strong><%= result %></strong></p>
+    <% end %>
+  <% end %>
 <% end %>
-

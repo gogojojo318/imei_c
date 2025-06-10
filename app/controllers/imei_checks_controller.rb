@@ -4,7 +4,14 @@ class ImeiChecksController < ApplicationController
 
   def create
     @imei = params[:imei]
-    @result = DocomoChecker.check(@imei)
+    @results = {
+      docomo: DocomoChecker.check(@imei),
+      #au:     AuChecker.check(@imei),
+      softbank: SoftBankChecker.check(@imei),
+      rakuten:  nil
+      
+    }
+    
     render :index
   end
 end
