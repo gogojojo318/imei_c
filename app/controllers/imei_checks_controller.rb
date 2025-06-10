@@ -8,7 +8,7 @@ class ImeiChecksController < ApplicationController
       docomo: DocomoChecker.check(@imei),
       #au:     AuChecker.check(@imei),
       softbank: SoftBankChecker.check(@imei),
-      rakuten:  nil
+      rakuten:  RakutenChecker.check(@imei)
       
     }
     

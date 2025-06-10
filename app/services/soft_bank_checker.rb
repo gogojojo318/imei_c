@@ -1,3 +1,6 @@
+require 'mechanize'
+require 'nokogiri'
+
 class SoftBankChecker
   def self.check(imei)
     agent = Mechanize.new
