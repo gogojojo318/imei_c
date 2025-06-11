@@ -1,14 +1,46 @@
+<% if flash[:alert] %>
+  <p style="color: red;"><%= flash[:alert] %></p>
+<% end %>
+
 <%= form_with url: imei_checks_path, method: :post, local: true do %>
-  <%= label_tag :imei, "IMEI入力" %>
-  <%= text_field_tag :imei %>
+  <%= label_tag :imei, "IMEI入力" %><br>
+  <%= text_field_tag :imei, @imei, id: "imei-input", maxlength: 15, pattern: '\d*', inputmode: 'numeric', placeholder: "15桁の数字" %>
+  <span id="char-count" style="font-weight: bold;">15</span> 文字残り<br><br>
   <%= submit_tag "チェック" %>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("imei-input");
+    const counter = document.getElementById("char-count");
+    const maxLength = 15;
+
+    function updateCounter() {
+      const remaining = maxLength - input.value.length;
+      counter.textContent = remaining;
+
+      // 色の変更
+      if (remaining >= 10) {
+        counter.style.color = "green";
+      } else if (remaining >= 5) {
+        counter.style.color = "orange";
+      } else {
+        counter.style.color = "red";
+      }
+    }
+
+    input.addEventListener("input", updateCounter);
+
+    // 初期表示も更新
+    updateCounter();
+  });
+</script>
 
 <h2>判定結果</h2>
 <% if @results.present? %>
   <% @results.each do |carrier, result| %>
     <% if result.present? %>
-      <p><%= carrier.to_s.capitalize %>：<strong><%= result %></strong></p>
+      <p><%= carrier.to_s.capitalize %>：<strong><%= result.tr('-', '－') %></strong></p>
     <% end %>
   <% end %>
 <% end %>

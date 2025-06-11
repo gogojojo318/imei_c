@@ -36,6 +36,11 @@ gem "bootsnap", require: false
 # gem "image_processing", "~> 1.2"
 
 gem 'mechanize'
+gem "jsbundling-rails"
+gem 'sassc-rails'
+gem 'bootstrap', '~> 5.3.0'
+
+
 
 
 group :development, :test do
