@@ -1,9 +1,14 @@
 class RakutenChecker
   def self.check(imei)
-    result = `node #{Rails.root.join('scripts/rakuten_checker.js')} #{imei}`.strip
-    return result.present? ? result : "結果が取得できませんでした"
+    script_path = Rails.root.join('scripts/rakuten_checker.js')
+    run_node_script(script_path, imei)
+  end
+
+  def self.run_node_script(path, imei)
+    output = `node #{path} #{imei}`.strip
+    output.present? ? output : "不明"
   rescue => e
-    Rails.logger.error "RakutenChecker Error: #{e.message}"
-    "チェック中にエラーが発生しました"
+    Rails.logger.error("#{name} エラー: #{e.message}")
+    "不明"
   end
 end

@@ -16,10 +16,10 @@ class ImeiChecksController < ApplicationController
 
     @results = {
       docomo:   DocomoChecker.check(@imei),
-      au:       AuChecker.check(@imei),
+      #au:       AuChecker.check(@imei),
       softbank: SoftBankChecker.check(@imei),
       rakuten:  RakutenChecker.check(@imei),
-      #mineo:    MineoChecker.check(@imei)
+      mineo:    MineoChecker.check(@imei)
     }
 
     render :index

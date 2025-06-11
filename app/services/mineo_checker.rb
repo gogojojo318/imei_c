@@ -1,6 +1,6 @@
-class AuChecker
+class MineoChecker
   def self.check(imei)
-    script_path = Rails.root.join('scripts/au_checker.js')
+    script_path = Rails.root.join('scripts/mineo_checker.js')
     run_node_script(script_path, imei)
   end
 
