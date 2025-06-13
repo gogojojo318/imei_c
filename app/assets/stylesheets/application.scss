@@ -1,1 +1,10 @@
 @import "bootstrap";
+
+/* app/assets/stylesheets/application.scss などに追加 */
+input:focus,
+button:focus,
+.form-control:focus,
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}

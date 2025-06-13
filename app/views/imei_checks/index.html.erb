@@ -1,46 +1,92 @@
-<% if flash[:alert] %>
-  <p style="color: red;"><%= flash[:alert] %></p>
-<% end %>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <% if flash[:alert] %>
+        <div class="alert alert-danger text-center">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
 
-<%= form_with url: imei_checks_path, method: :post, local: true do %>
-  <%= label_tag :imei, "IMEI入力" %><br>
-  <%= text_field_tag :imei, @imei, id: "imei-input", maxlength: 15, pattern: '\d*', inputmode: 'numeric', placeholder: "15桁の数字" %>
-  <span id="char-count" style="font-weight: bold;">15</span> 文字残り<br><br>
-  <%= submit_tag "チェック" %>
-<% end %>
+      <div class="card shadow-sm mt-5">
+        <div class="card-body">
+          <%= form_with url: imei_checks_path, method: :post, local: true do %>
+            <div class="mb-3">
+              <%= label_tag :imei, "IMEI入力", class: "form-label" %>
+              <div class="input-group">
+                <%= text_field_tag :imei, @imei, id: "imei-input", maxlength: 15,
+                                   pattern: '\d*', inputmode: 'numeric',
+                                   placeholder: "15桁の数字",
+                                   class: "form-control" %>
+                <button type="button" id="clear-btn" class="btn btn-outline-secondary">
+                  &times;
+                </button>
+              </div>
+              <div class="form-text text-end">
+                残り <span id="char-count" class="fw-bold text-success">15</span> 文字
+              </div>
+            </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const input = document.getElementById("imei-input");
-    const counter = document.getElementById("char-count");
-    const maxLength = 15;
+            <%= submit_tag "チェック", class: "btn btn-primary w-100 mb-3" %>
+          <% end %>
+        </div>
+      </div>
 
-    function updateCounter() {
-      const remaining = maxLength - input.value.length;
-      counter.textContent = remaining;
+      <h2 class="mt-5 mb-3 text-center">【判定結果】</h2>
+      <% if @results.present? %>
+        <% @results.each do |carrier, result| %>
+          <% next unless result.present? %>
+          <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+            <div>
+              <%= carrier.to_s.capitalize %>：<strong><%= result.tr('-', '－') %></strong>
+            </div>
+            <div>
+              <% case carrier.to_s.downcase %>
+              <% when "docomo" %>
+                <a href="http://nw-restriction.nttdocomo.co.jp/search.php" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">公式サイト</a>
+              <% when "au" %>
+                <a href="https://my.au.com/cmn/WCV009001/WCE009001.hc" target="_blank" rel="noopener" class="btn btn-sm btn-outline-warning">公式サイト</a>
+              <% when "softbank" %>
+                <a href="https://ct99.my.softbank.jp/WBF/icv" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger">公式サイト</a>
+              <% when "rakuten" %>
+                <a href="https://network.mobile.rakuten.co.jp/restriction/" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger">公式サイト</a>
+              <% when "mineo" %>
+                <a href="https://my.mineo.jp/info/GNS010101GNS010101_Init.action" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success">公式サイト</a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
 
-      // 色の変更
-      if (remaining >= 10) {
-        counter.style.color = "green";
-      } else if (remaining >= 5) {
-        counter.style.color = "orange";
-      } else {
-        counter.style.color = "red";
-      }
-    }
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const input = document.getElementById("imei-input");
+          const counter = document.getElementById("char-count");
+          const clearBtn = document.getElementById("clear-btn");
+          const maxLength = 15;
 
-    input.addEventListener("input", updateCounter);
+          function updateCounter() {
+            const remaining = maxLength - input.value.length;
+            counter.textContent = remaining;
+            counter.className = "fw-bold " +
+              (remaining >= 10 ? "text-success" :
+               remaining >= 5  ? "text-warning" :
+                                 "text-danger");
+          }
 
-    // 初期表示も更新
-    updateCounter();
-  });
-</script>
+          // 入力時カウント更新
+          input.addEventListener("input", updateCounter);
 
-<h2>判定結果</h2>
-<% if @results.present? %>
-  <% @results.each do |carrier, result| %>
-    <% if result.present? %>
-      <p><%= carrier.to_s.capitalize %>：<strong><%= result.tr('-', '－') %></strong></p>
-    <% end %>
-  <% end %>
-<% end %>
+          // クリアボタン押下で入力クリア＆カウントリセット
+          clearBtn.addEventListener("click", function () {
+            input.value = "";
+            updateCounter();
+            input.focus();
+          });
+
+          // 初期表示
+          updateCounter();
+        });
+      </script>
+    </div>
+  </div>
+</div>
