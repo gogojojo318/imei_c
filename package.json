@@ -7,5 +7,8 @@
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^24.10.1"
+  },
+  "scripts": {
+    "build": "echo \"No build process configured\""
   }
 }

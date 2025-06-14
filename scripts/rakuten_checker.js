@@ -5,9 +5,11 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 (async () => {
   const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // 環境に応じて
-  });
+  headless: 'new',
+  executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // 環境に合わせてパスは必須
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
+
 
   const page = await browser.newPage();
 
