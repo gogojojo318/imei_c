@@ -41,3 +41,6 @@
 
 # .gitignore
 .env
+
+# Ignore npm lock file since we're using Yarn
+/package-lock.json
