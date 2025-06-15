@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "🔧 Installing dependencies with yarn..."
+echo "🛠 Installing Node dependencies..."
 yarn install
 
 echo "🌐 Installing Puppeteer Chromium..."
