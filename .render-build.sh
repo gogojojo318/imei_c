@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
 
 echo "🛠 Installing Node dependencies..."
 yarn install
@@ -7,8 +6,13 @@ yarn install
 echo "🌐 Installing Puppeteer Chromium..."
 yarn exec puppeteer browsers install chrome
 
-echo "💎 Installing Ruby gems..."
-bundle install
+# PuppeteerがChromeをインストールした後に設定ファイルを書き換える必要がある
+echo "📄 Writing Puppeteer config..."
+cat <<EOF > .puppeteerrc.cjs
+export default {
+  executablePath: '/opt/render/.cache/puppeteer/chrome/linux-137.0.7151.70/chrome-linux64/chrome'
+};
+EOF
 
-echo "🔧 Regenerating binstubs for bundler..."
+# バンドラーのbinstubが壊れている場合に備えて再生成
 bundle binstubs bundler --force
