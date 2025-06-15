@@ -1,30 +1,19 @@
-const puppeteer = require('puppeteer');
+// checkers/mineo.js
+const { launchBrowser } = require('../helpers/puppeteerHelper.js');
 
-const imei = process.argv[2];
-
-(async () => {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
+async function checkMineo(imei) {
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   await page.goto('https://my.mineo.jp/info/GNS010101GNS010101_Init.action');
-
-  // IMEI入力
   await page.type('#GNS010101GNS010101_Init_imei', imei);
-
-  // Enterキーでフォーム送信
   await page.keyboard.press('Enter');
 
-  // 「状態」セルが表示されるまで待機（最大10秒）
   await page.waitForFunction(() => {
     const rows = document.querySelectorAll('table.table_basic01 tr');
     return Array.from(rows).some(row => row.innerText.includes('状態'));
   }, { timeout: 10000 });
 
-  // 状態を取得
   const rawStatus = await page.evaluate(() => {
     const rows = Array.from(document.querySelectorAll('table.table_basic01 tr'));
     for (const row of rows) {
@@ -37,10 +26,28 @@ const imei = process.argv[2];
     return null;
   });
 
-  // 結果1文字目を抽出し、- を全角に変換
   const result = rawStatus ? rawStatus.charAt(0).replace('-', '－') : '不明';
 
-  console.log(result);
-
   await browser.close();
-})();
+  return result;
+}
+
+module.exports = checkMineo;
+
+
+if (require.main === module) {
+  const imei = process.argv[2];
+  if (!imei) {
+    console.error('IMEIを引数に指定してください');
+    process.exit(1);
+  }
+  checkMineo(imei)
+    .then(result => {
+      console.log(result);
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
+}

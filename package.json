@@ -6,6 +6,7 @@
   "author": "gogojojo <o8oxoxxxxxx@icloud.com>",
   "license": "MIT",
   "dependencies": {
+    "iconv-lite": "^0.6.3",
     "puppeteer": "^24.10.1"
   },
   "scripts": {

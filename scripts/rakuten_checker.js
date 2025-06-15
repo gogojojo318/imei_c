@@ -1,40 +1,45 @@
-const puppeteer = require('puppeteer-core');
-const imei = process.argv[2];
+const puppeteer = require('puppeteer');
+const { launchBrowser, blockUnnecessaryRequests } = require('../helpers/puppeteerHelper');
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-(async () => {
-  const browser = await puppeteer.launch({
-  headless: 'new',
-  executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // 環境に合わせてパスは必須
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-});
-
-
+async function checkRakuten(imei) {
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
-  await page.goto('https://network.mobile.rakuten.co.jp/restriction/', {
-    waitUntil: 'networkidle2',
-  });
+  await blockUnnecessaryRequests(page);
 
-  // IMEI入力
+  await page.goto('https://network.mobile.rakuten.co.jp/restriction/', { waitUntil: 'networkidle2' });
   await page.waitForSelector('#imei');
   await page.type('#imei', imei);
 
-  // ボタンが活性化するのを待ってクリック
   await page.waitForFunction(() => {
     const btn = document.querySelector('#search');
     return btn && !btn.classList.contains('is-disabled');
   });
   await page.click('#search');
 
-  // 結果が表示されるまで待機
   await page.waitForSelector('#search-result', { timeout: 10000 });
-
-  // 判定記号を抽出して全角に変換
-const resultRaw = await page.$eval('#search-result', el => el.textContent.trim());
-const result = resultRaw.replace(/-/g, '－');  // ← ここで変換
-console.log(`${result}`);
+  const resultRaw = await page.$eval('#search-result', el => el.textContent.trim());
+  const result = resultRaw.replace(/-/g, '－');
 
   await browser.close();
-})();
+  return result;
+}
+
+module.exports = checkRakuten;
+
+if (require.main === module) {
+  const imei = process.argv[2];
+  if (!imei) {
+    console.error('IMEIを引数に指定してください');
+    process.exit(1);
+  }
+  checkRakuten(imei)
+    .then(result => {
+      console.log(result);
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
+}

@@ -1,62 +1,59 @@
-const puppeteer = require('puppeteer');
+// checkers/au.js
+const { launchBrowser, blockUnnecessaryRequests } = require('../helpers/puppeteerHelper');
 
-const imei = process.argv[2]; // コマンドライン引数
 
-(async () => {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+async function checkAu(imei) {
+  const browser = await launchBrowser();
+  const page = await browser.newPage();
+  await blockUnnecessaryRequests(page);
 
-  const page = await browser.newPage(); // ← ✅ これが必要！
-
-  // 不要リソースをブロック
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const t = req.resourceType();
-    if (['image', 'stylesheet', 'font'].includes(t)) req.abort();
-    else req.continue();
-  });
-
-  await page.goto('https://my.au.com/cmn/WCV009001/WCE009001.hc', {
-    waitUntil: 'domcontentloaded',
-    timeout: 60000
-  });
-
-  // IMEIを入力して送信
+  await page.goto('https://my.au.com/cmn/WCV009001/WCE009001.hc', { waitUntil: 'domcontentloaded' });
   await page.type('#imei', imei);
   await page.click('.btnPrimary');
 
-  // 「状態」の .list_details が出るまで待機
   await page.waitForFunction(() => {
     const items = Array.from(document.querySelectorAll('.list_item'));
     return items.some(li => {
       const h = li.querySelector('.list_heading');
       const d = li.querySelector('.list_details');
-      return h && /状態/.test(h.textContent) && d && /[〇○×△－]/.test(d.textContent);
+      return h && /状態/.test(h.textContent) && d && /[〇○×△－ー-]/.test(d.textContent);
     });
   }, { timeout: 60000 });
 
-  // 状態のテキストだけを取得
-  const raw = await page.evaluate(() => {
+  const result = await page.evaluate(() => {
     const items = Array.from(document.querySelectorAll('.list_item'));
     for (const li of items) {
       const h = li.querySelector('.list_heading');
-      if (h && /状態/.test(h.textContent)) {
-        const d = li.querySelector('.list_details');
-        if (!d) return null;
-        const m = d.textContent.match(/[〇○×△－ー-]/);
-        if (m) {
-          let c = m[0];
-          if (c === 'ー' || c === '-') c = '－';
-          return c;
-        }
+      const d = li.querySelector('.list_details');
+      if (h && /状態/.test(h.textContent) && d) {
+        let c = d.textContent.match(/[〇○×△－ー-]/)?.[0];
+        if (c === 'ー' || c === '-') c = '－';
+        return c;
       }
     }
-    return null;
+    return '不明';
   });
 
-  const result = raw || '不明';
-  console.log(result);
   await browser.close();
-})();
+  return result;
+}
+
+// CLI実行用のコードを追加
+if (require.main === module) {
+  const imei = process.argv[2];
+  if (!imei) {
+    console.error('IMEIを引数に指定してください');
+    process.exit(1);
+  }
+  checkAu(imei)
+    .then(result => {
+      console.log(result);
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
+}
+
+module.exports = checkAu;
