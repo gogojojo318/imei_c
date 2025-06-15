@@ -1,8 +1,10 @@
+// helpers/puppeteerHelper.js
 const puppeteer = require('puppeteer');
 
 async function launchBrowser() {
   return await puppeteer.launch({
     headless: 'new',
+    executablePath: process.env.CHROME_EXECUTABLE_PATH || undefined,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
