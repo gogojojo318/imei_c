@@ -10,5 +10,5 @@ yarn exec puppeteer browsers install chrome
 echo "💎 Installing Ruby gems..."
 bundle install
 
-echo "🔧 Regenerating binstubs for bundler (in case needed)..."
+echo "🔧 Regenerating binstubs for bundler..."
 bundle binstubs bundler --force
