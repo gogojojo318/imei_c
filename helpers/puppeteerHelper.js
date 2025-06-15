@@ -1,10 +1,11 @@
-// helpers/puppeteerHelper.js
 const puppeteer = require('puppeteer');
 
 async function launchBrowser() {
+  const executablePath = process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath(); // fallback対応
+
   return await puppeteer.launch({
     headless: 'new',
-    executablePath: process.env.CHROME_EXECUTABLE_PATH || undefined,
+    executablePath,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -15,20 +16,3 @@ async function launchBrowser() {
     ]
   });
 }
-
-async function blockUnnecessaryRequests(page) {
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const type = req.resourceType();
-    if (['image', 'stylesheet', 'font'].includes(type)) {
-      req.abort();
-    } else {
-      req.continue();
-    }
-  });
-}
-
-module.exports = {
-  launchBrowser,
-  blockUnnecessaryRequests
-};

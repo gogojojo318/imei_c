@@ -9,6 +9,9 @@ export PUPPETEER_CACHE_DIR=.cache
 export PUPPETEER_DOWNLOAD_PATH=.cache
 yarn exec puppeteer browsers install chrome
 
+echo "🔍 Setting CHROME_EXECUTABLE_PATH environment variable..."
+export CHROME_EXECUTABLE_PATH=$(node -e "console.log(require('puppeteer').executablePath())")
+
 echo "🔧 Rebuilding bundler binstub..."
 bundle binstubs bundler --force
 
