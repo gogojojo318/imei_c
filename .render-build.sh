@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -o errexit
 
 echo "🛠 Installing Node dependencies..."
 yarn install
@@ -6,10 +7,8 @@ yarn install
 echo "🌐 Installing Puppeteer Chromium..."
 yarn exec puppeteer browsers install chrome
 
+echo "💎 Installing Ruby gems..."
+bundle install
 
-# PuppeteerのChromiumインストール
-yarn install
-yarn exec puppeteer browsers install chrome
-
-# バンドラーのbinstubが壊れている場合に備えて再生成
+echo "🔧 Regenerating binstubs for bundler (in case needed)..."
 bundle binstubs bundler --force
