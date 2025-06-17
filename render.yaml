@@ -3,7 +3,8 @@ services:
     name: imei-checker-app
     env: ruby
     buildCommand: ./render-build.sh
-    startCommand: bundle exec rails server -b 0.0.0.0
+    startCommand: ruby bin/rails server -b 0.0.0.0
+
     envVars:
       - key: PUPPETEER_CACHE_DIR
         value: /opt/render/.cache/puppeteer

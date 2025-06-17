@@ -1,12 +1,14 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
 
-echo "Installing Node.js dependencies..."
+set -o errexit
+
+# PuppeteerがChromeをDLできるように
+export PUPPETEER_SKIP_DOWNLOAD=false
+
+# PuppeteerとブラウザをDL
 yarn install
+yarn run postinstall
 
-echo "Setting Puppeteer cache dir..."
-export PUPPETEER_CACHE_DIR=/opt/render/.cache/puppeteer
-export PUPPETEER_DOWNLOAD_PATH=/opt/render/.cache/puppeteer
-
-echo "Installing Chromium for Puppeteer..."
-npx puppeteer browsers install chrome
+# Puppeteerのパスを確認（デバッグ用）
+export PUPPETEER_EXECUTABLE_PATH="$(node -p 'require("puppeteer").executablePath()')"
+echo "Using Puppeteer path: $PUPPETEER_EXECUTABLE_PATH"

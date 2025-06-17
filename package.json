@@ -8,7 +8,7 @@
   "dependencies": {
     "iconv-lite": "^0.6.3",
     "playwright": "^1.53.0",
-    "puppeteer": "^24.10.1"
+    "puppeteer": "^22.1.1"
   },
   "scripts": {
     "build": "echo \"No build process configured\"",

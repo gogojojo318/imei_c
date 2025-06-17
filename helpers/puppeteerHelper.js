@@ -1,10 +1,10 @@
 const puppeteer = require('puppeteer');
 
 async function launchBrowser() {
-  const executablePath = process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath();
+  const executablePath = puppeteer.executablePath(); // puppeteerが自動で使うもの
 
   return await puppeteer.launch({
-    headless: 'new', // または true
+    headless: 'new',
     executablePath,
     args: [
       '--no-sandbox',
@@ -16,20 +16,3 @@ async function launchBrowser() {
     ]
   });
 }
-
-async function blockUnnecessaryRequests(page) {
-  await page.setRequestInterception(true);
-  page.on('request', req => {
-    const resourceType = req.resourceType();
-    if (['image', 'stylesheet', 'font'].includes(resourceType)) {
-      req.abort();
-    } else {
-      req.continue();
-    }
-  });
-}
-
-module.exports = {
-  launchBrowser,
-  blockUnnecessaryRequests
-};
