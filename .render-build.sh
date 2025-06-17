@@ -2,13 +2,14 @@
 
 set -o errexit
 
-# PuppeteerがChromeをDLできるように
-export PUPPETEER_SKIP_DOWNLOAD=false
-
-# PuppeteerとブラウザをDL
+# Puppeteerとブラウザのインストール（Chrome含む）
 yarn install
-yarn run postinstall
+npx puppeteer browsers install chrome
 
-# Puppeteerのパスを確認（デバッグ用）
-export PUPPETEER_EXECUTABLE_PATH="$(node -p 'require("puppeteer").executablePath()')"
-echo "Using Puppeteer path: $PUPPETEER_EXECUTABLE_PATH"
+# PuppeteerのChromeパスをデバッグ表示
+echo "Using Puppeteer path: $(node -p 'require(\"puppeteer\").executablePath()')"
+
+# Ruby側の準備（必要に応じて）
+bundle install
+bundle exec rails db:migrate
+bundle exec rails assets:precompile
