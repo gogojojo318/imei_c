@@ -21,18 +21,18 @@ async function checkAu(imei) {
   }, { timeout: 60000 });
 
   const result = await page.evaluate(() => {
-    const items = Array.from(document.querySelectorAll('.list_item'));
-    for (const li of items) {
-      const h = li.querySelector('.list_heading');
-      const d = li.querySelector('.list_details');
-      if (h && /状態/.test(h.textContent) && d) {
-        let c = d.textContent.match(/[〇○×△－ー-]/)?.[0];
-        if (c === 'ー' || c === '-') c = '－';
-        return c;
-      }
+  const items = Array.from(document.querySelectorAll('.list_item'));
+  for (const li of items) {
+    const h = li.querySelector('.list_heading');
+    const d = li.querySelector('.list_details');
+    if (h && /状態/.test(h.textContent) && d) {
+      const text = d.textContent.trim().replace(/[ー-]/g, '－'); // ←ここで正規化
+      let c = text.match(/[〇○×△－]/)?.[0];
+      return c || '不明';
     }
-    return '不明';
-  });
+  }
+  return '不明';
+});
 
   await browser.close();
   return result;
