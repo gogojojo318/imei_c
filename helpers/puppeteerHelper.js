@@ -1,10 +1,11 @@
-// helpers/puppeteerHelper.js
-
-const puppeteer = require('puppeteer'); // puppeteer-core ではない！
+const puppeteer = require('puppeteer');
 
 async function launchBrowser() {
+  const executablePath = process.env.CHROME_EXECUTABLE_PATH || puppeteer.executablePath();
+
   return await puppeteer.launch({
     headless: 'new', // または true
+    executablePath,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
