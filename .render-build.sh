@@ -1,18 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
 
-echo "📦 Installing Node.js dependencies..."
+echo "Installing Node.js dependencies..."
 yarn install
 
-echo "🌐 Installing Puppeteer Chromium..."
-export PUPPETEER_CACHE_DIR=.cache
-export PUPPETEER_DOWNLOAD_PATH=.cache
-yarn exec puppeteer browsers install chrome
+echo "Setting Puppeteer cache dir..."
+export PUPPETEER_CACHE_DIR=/opt/render/.cache/puppeteer
+export PUPPETEER_DOWNLOAD_PATH=/opt/render/.cache/puppeteer
 
-echo "🔍 Setting CHROME_EXECUTABLE_PATH environment variable..."
+echo "Installing Chromium for Puppeteer..."
+npx puppeteer browsers install chrome
+
+echo "Setting CHROME_EXECUTABLE_PATH..."
 export CHROME_EXECUTABLE_PATH=$(node -e "console.log(require('puppeteer').executablePath())")
 
-echo "🔧 Rebuilding bundler binstub..."
-bundle binstubs bundler --force
-
-echo "✅ Build script finished!"
+echo "Starting app..."
+node scripts/au_checker.js
