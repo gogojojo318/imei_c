@@ -11,7 +11,4 @@ test:
   <<: *default
   database: storage/test.sqlite3
 
-production:
-  <<: *default
-  database: storage/production.sqlite3
 
